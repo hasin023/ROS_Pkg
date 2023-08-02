@@ -1,21 +1,56 @@
 #!/usr/bin/env python3
 
 import rospy
+
+from math import radians
 from geometry_msgs.msg import Twist
 from turtlesim.msg import Pose
 
 
-def pose_callback(pose: Pose):
-    cmd = Twist()
+def avoid_border(data):
+    avoid_cmd = Twist()
 
-    if pose.x > 10.0 or pose.x < 1.0 or pose.y > 10.0 or pose.y < 1.0:
-        cmd.linear.x = 1.0
-        cmd.angular.z = 1.3
+    if data.x > 9.5 or data.x < 1.5 or data.y > 9.5 or data.y < 1.5:
+        rospy.logwarn("Danger zone detected! Changing direction")
+        avoid_cmd.linear.x = 1.0
+        avoid_cmd.angular.z = - 1.3
     else:
-        cmd.linear.x = 2.0
-        cmd.angular.z = 0.0
+        rospy.loginfo("Moving forward")
+        avoid_cmd.linear.x = 2.0
+        avoid_cmd.angular.z = 0.0
 
-    publisher.publish(cmd)
+    publisher.publish(avoid_cmd)
+
+
+def draw_square():
+
+    rate = rospy.Rate(5)
+
+    move_cmd = Twist()
+    move_cmd.linear.x = 1.0
+
+    turn_cmd = Twist()
+    turn_cmd.linear.x = 0
+    turn_cmd.angular.z = radians(45)
+
+    while not rospy.is_shutdown():
+        # Forward
+        rospy.loginfo("Going Straight")
+        for x in range(0, 10):
+            publisher.publish(move_cmd)
+            rate.sleep()
+
+        # Turn 90 degrees
+        rospy.loginfo("Turning")
+        for x in range(0, 10):
+            publisher.publish(turn_cmd)
+            rate.sleep()
+
+
+def pose_callback(pose: Pose):
+
+    avoid_border(pose)
+    # draw_square()
 
 
 if __name__ == '__main__':
