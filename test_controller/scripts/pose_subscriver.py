@@ -4,7 +4,7 @@ import rospy
 from turtlesim.msg import Pose
 
 
-def pose_callback(data):
+def pose_callback(data: Pose):
     rospy.loginfo("x: %f, y: %f", data.x, data.y)
 
 
