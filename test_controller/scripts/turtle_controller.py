@@ -7,6 +7,40 @@ from geometry_msgs.msg import Twist
 from turtlesim.msg import Pose
 
 
+def process_instructions(instructions):
+
+    rate = rospy.Rate(5)
+
+    move_cmd = Twist()
+    move_cmd.linear.x = 2.0
+
+    turn_R_cmd = Twist()
+    turn_R_cmd.linear.x = 0
+    turn_R_cmd.angular.z = radians(-45)
+
+    turn_L_cmd = Twist()
+    turn_L_cmd.linear.x = 0
+    turn_L_cmd.angular.z = radians(45)
+
+    for i in instructions:
+        if i == 'F':
+            rospy.logwarn("Moving forward")
+            publisher.publish(move_cmd)
+            rate.sleep()
+
+        elif i == 'L':
+            for x in range(0, 10):
+                rospy.logwarn("Turning Left")
+                publisher.publish(turn_L_cmd)
+                rate.sleep()
+
+        elif i == 'R':
+            for x in range(0, 10):
+                rospy.logwarn("Turning Right")
+                publisher.publish(turn_R_cmd)
+                rate.sleep()
+
+
 def avoid_border(data):
     avoid_cmd = Twist()
 
@@ -49,8 +83,11 @@ def draw_square():
 
 def pose_callback(pose: Pose):
 
-    avoid_border(pose)
+    # avoid_border(pose)
     # draw_square()
+
+    instructions = "FFFLFFFRFFFL"  # PLUS (+) Sign
+    process_instructions(instructions)
 
 
 if __name__ == '__main__':
