@@ -13,7 +13,7 @@ if __name__ == '__main__':
 
     while not rospy.is_shutdown():
         message = Twist()
-        message.linear.x = 3.0
+        message.linear.x = 2.0
         message.angular.z = 1.0
         publisher.publish(message)
         rate.sleep()
