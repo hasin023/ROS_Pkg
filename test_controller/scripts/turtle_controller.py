@@ -5,6 +5,16 @@ import rospy
 from math import radians
 from geometry_msgs.msg import Twist
 from turtlesim.msg import Pose
+from turtlesim.srv import SetPen
+
+
+def call_set_pen_service(r, g, b, width, off):
+    rospy.wait_for_service("/turtle1/set_pen")
+    try:
+        set_pen = rospy.ServiceProxy("/turtle1/set_pen", SetPen)
+        set_pen(r, g, b, width, off)
+    except rospy.ServiceException as e:
+        rospy.logerr(e)
 
 
 def process_instructions(instructions):
@@ -24,18 +34,23 @@ def process_instructions(instructions):
 
     for i in instructions:
         if i == 'F':
+            # call_set_pen_service(255, 255, 255, 5, 0)
             rospy.logwarn("Moving forward")
             publisher.publish(move_cmd)
             rate.sleep()
 
         elif i == 'L':
+
             for x in range(0, 10):
+                call_set_pen_service(255, 0, 0, 5, 0)
                 rospy.logwarn("Turning Left")
                 publisher.publish(turn_L_cmd)
                 rate.sleep()
 
         elif i == 'R':
+
             for x in range(0, 10):
+                call_set_pen_service(0, 255, 0, 5, 0)
                 rospy.logwarn("Turning Right")
                 publisher.publish(turn_R_cmd)
                 rate.sleep()
